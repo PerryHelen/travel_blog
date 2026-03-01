@@ -1,0 +1,55 @@
+{% extends "account/dashboard_author.html" %}
+{% block page %}
+<!-- 内容 -->
+
+<h1 class="mb-3 text-center">所有已提交的帖子</h1>
+<section class="mb-3 container-fluid">
+    <div class="table-responsive w-100">
+        <table class="col-md-12 table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col" class="align-middle"># 编号</th>
+                    <th scope="col" class="align-middle">标题</th>
+                    <th scope="col" class="align-middle">主题</th>
+                    <th scope="col" class="align-middle">发布日期</th>
+                    <th scope="col" class="align-middle">提交日期</th>
+                    <th scope="col" class="align-middle">点赞数</th>
+                    <th scope="col" class="align-middle">收藏数</th>
+                    <th scope="col" class="align-middle">评论数</th>
+                    <th scope="col" class="align-middle">管理员已批准</th>
+                    <th scope="col" class="align-middle">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in all_blog_posts_submitted %}
+                <tr>
+                    <th scope="row" class="align-middle">{{post.id}}</th>
+                    <td class="align-middle">{{post.title}}</td>
+                    <td class="align-middle">{{post.theme_group.theme}}</td>
+                    <td class="align-middle">{{post.date_to_post.strftime('%Y-%m-%d')}}</td>
+                    <td class="align-middle">{{post.date_submitted.strftime('%Y-%m-%d')}}</td>
+                    <td class="align-middle">{{post.likes|length}}</td>
+                    <td class="align-middle">{{post.bookmarks|length}}</td>
+                    <td class="align-middle">{{post.comments|length}}</td>
+                    <td class="align-middle">{{post.admin_approved}}</td>
+                    <td class="d-flex flex-column" style="gap: 5px;">
+                        <div class="d-flex" style="gap: 5px;">
+                            <a href="{{url_for('dashboard.preview_post_author', id=post.id)}}" target="_blank"
+                                class="btn btn-sm ALL-mini-btn"
+                                style="width: 147px; background-color: #728c6996;">预览</a>
+                        </div>
+                        <div class="d-flex" style="gap: 5px;">
+                            <a href="{{url_for('dashboard.edit_post_author', id=post.id)}}"
+                                class="btn btn-secondary btn-sm" style="width: 70px !important;">编辑</a>
+                            <a href="{{url_for('dashboard.delete_post_author', id=post.id)}}"
+                                class="btn btn-danger btn-sm" style="width: 70px;">删除</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

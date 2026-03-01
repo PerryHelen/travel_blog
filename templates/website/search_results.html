@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<meta name="description" content="旅游博客 - 搜索结果">
+{% endblock %}
+{% block title %}搜索结果 - 旅游博客{% endblock %}
+
+{% block content %}
+
+<!-- 内容 -->
+{% if search_query %}
+<h1 class="ALL-special-font ALL-h1 text-center">搜索结果："{{ search_query }}"</h1>
+{% else %}
+<h1 class="ALL-special-font ALL-h1 text-center">搜索文章</h1>
+{% endif %}
+
+{% if not search_query %}
+<!-- 无搜索关键词时显示提示 -->
+<section class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <p class="lead">请输入搜索关键词来查找文章</p>
+            <p class="text-muted">搜索功能支持在文章标题、简介和正文中查找关键词</p>
+        </div>
+    </div>
+</section>
+{% elif search_results|length == 0 %}
+<!-- 无搜索结果时 -->
+<section class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <p class="lead">未找到相关文章</p>
+            <p class="text-muted">请尝试使用其他关键词搜索</p>
+        </div>
+    </div>
+</section>
+{% else %}
+<!-- 显示搜索结果数量 -->
+<section class="container-fluid mt-2">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <p class="text-muted">找到 {{ search_results|length }} 篇相关文章</p>
+        </div>
+    </div>
+</section>
+
+<!-- 搜索结果卡片 -->
+{% for post in search_results %}
+<section class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="row no-gutters" style="width: 57rem;">
+            <div class="col-md-6 card-img ALL-picture ">
+                {% if post.picture_h %}
+                <img src="{{ url_for('static', filename='Pictures_Posts/'+post.picture_h) }}" class="card-img"
+                    alt="{{ post.picture_alt }}">
+                {% elif post.picture_v %}
+                <img src="{{ url_for('static', filename='Pictures_Posts/'+post.picture_v) }}" class="card-img"
+                    alt="{{ post.picture_alt }}">
+                {% elif post.picture_s %}
+                <img src="{{ url_for('static', filename='Pictures_Posts/'+post.picture_s) }}" class="card-img"
+                    alt="{{ post.picture_alt }}">
+                {% else %}
+                <img src="{{ url_for('static', filename='Pictures_Posts/Picture_not_available.png') }}" class="card-img"
+                    alt="无图片">
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text text-justify">{{ intros[loop.index0] }}</p>
+                    <a role="button" href="{{ url_for('website.blog_post', index=post.id) }}"
+                        class="btn ALL-green-btn mb-2" style="width: 150px;">阅读</a>
+                    <p class="card-text"><small class="text-muted"> 作者：{{ post.author.name }} - {{
+                            post.date_to_post}}</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,198 @@
+{% if current_user.type == "admin" or current_user.type == "super_admin"%}
+{% extends "account/dashboard_admin.html" %}
+{% else %}
+{% extends "account/dashboard_author.html" %}
+{% endif %}
+
+{% block page %}
+
+<h1 class="mb-3 text-center">编辑帖子</h1>
+
+<section class="mb-3 container-fluid">
+    <div class="justify-content-center">
+        <form action="" method="POST" enctype="multipart/form-data">
+            {{form.hidden_tag()}}
+            {{form.theme.label (class="form-label")}}
+            {{form.theme (class="form-control")}}
+            <br>
+            {% if current_user.type == "super_admin" %}
+            {{form.author.label (class="form-label")}}
+            {{form.author (class="form-control")}}
+            <br>
+            {% endif %}
+            {{form.date.label (class="form-label")}}
+            {{form.date (class="form-control", type="date")}}
+            <br>
+            {{form.title.label (class="form-label")}}
+            {{form.title (class="form-control")}}
+            <br>
+            {{form.intro.label (class="form-label")}}
+            {{form.intro (class="form-control")}}
+            <br>
+            {{form.body.label (class="form-label")}}
+            {{form.body (class="form-control", rows="10")}}
+            <br>
+            <div class="card mb-2" style="max-width: 540px;">
+                <div class="row no-gutters">
+                    <div class="col-md-2">
+                        <img {% if not post_to_edit.picture_v or post_to_edit.picture_v=="" %}
+                            src="{{ url_for('static', filename='Pictures_Posts/Picture_not_available.png') }}" {% else
+                            %} src="{{ url_for('static', filename='Pictures_Posts/'+post_to_edit.picture_v) }}" {% endif
+                            %} class="card-img" alt="已上传图片" style="height:50px; width: auto">
+                    </div>
+                    <div class="col-md-10">
+                        <div class="card-body" style="height: 50px;">
+                            <p class="card-text" style="margin-top: -5px;">
+                                {% if not post_to_edit.picture_v or post_to_edit.picture_v == "" %}
+                                <b>缺少垂直图片：请在下方上传</b>
+                                {% else %}
+                                <b>如需更换图片，请在下方上传新图片</b>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{form.picture_v.label (class="form-label")}}
+            {{form.picture_v (class="form-control", oninput="checkFileSizeBlogPic(this, 'picture_v_size')")}}
+            {{form.picture_v_size (class="form-control", id="picture_v_size", type="hidden")}}
+            <br>
+            <div class="card mb-2" style="max-width: 540px;">
+                <div class="row no-gutters">
+                    <div class="col-md-2">
+                        <img {% if not post_to_edit.picture_h or post_to_edit.picture_h=="" %}
+                            src="{{ url_for('static', filename='Pictures_Posts/Picture_not_available.png') }}" {% else
+                            %} src="{{ url_for('static', filename='Pictures_Posts/'+post_to_edit.picture_h) }}" {% endif
+                            %} class="card-img" alt="已上传图片" style="height:50px; width: auto">
+                    </div>
+                    <div class="col-md-10">
+                        <div class="card-body" style="height: 50px;">
+                            <p class="card-text" style="margin-top: -5px;">
+                                {% if not post_to_edit.picture_h or post_to_edit.picture_h == "" %}
+                                <b>缺少水平图片：请在下方上传</b>
+                                {% else %}
+                                <b>如需更换图片，请在下方上传新图片</b>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{form.picture_h.label (class="form-label")}}
+            {{form.picture_h (class="form-control", oninput="checkFileSizeBlogPic(this, 'picture_h_size')")}}
+            {{form.picture_h_size (class="form-control", id="picture_h_size", type="hidden")}}
+            <br>
+            <div class="card mb-2" style="max-width: 540px;">
+                <div class="row no-gutters">
+                    <div class="col-md-2">
+                        <img {% if not post_to_edit.picture_s or post_to_edit.picture_s=="" %}
+                            src="{{ url_for('static', filename='Pictures_Posts/Picture_not_available.png') }}" {% else
+                            %} src="{{ url_for('static', filename='Pictures_Posts/'+post_to_edit.picture_s) }}" {% endif
+                            %} class="card-img" alt="已上传图片" style="height:50px; width: auto">
+                    </div>
+                    <div class="col-md-10">
+                        <div class="card-body" style="height: 50px;">
+                            <p class="card-text" style="margin-top: -5px;">
+                                {% if not post_to_edit.picture_s or post_to_edit.picture_s == "" %}
+                                <b>缺少方形图片：请在下方上传</b>
+                                {% else %}
+                                <b>如需更换图片，请在下方上传新图片</b>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{form.picture_s.label (class="form-label")}}
+            {{form.picture_s (class="form-control", oninput="checkFileSizeBlogPic(this, 'picture_s_size')")}}
+            {{form.picture_s_size (class="form-control", id="picture_s_size", type="hidden")}}
+            <br>
+            {{form.picture_alt.label (class="form-label")}}
+            {{form.picture_alt (class="form-control")}}
+            <br>
+            {{form.meta_tag.label (class="form-label")}}
+            {{form.meta_tag (class="form-control")}}
+            <br>
+            {{form.title_tag.label (class="form-label")}}
+            {{form.title_tag (class="form-control")}}
+            <br>
+            
+            <!-- AI摘要生成区域 -->
+            <div class="card mb-3" style="border-left: 4px solid #9ED17B;">
+                <div class="card-body">
+                    <h6 class="card-title">🤖 AI 智能摘要</h6>
+                    {% if post_to_edit.summary %}
+                    <div class="alert alert-success mb-3" role="alert">
+                        <strong>当前摘要：</strong>
+                        <p class="mb-0 mt-2">{{ post_to_edit.summary }}</p>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-3">该文章尚未生成AI摘要</p>
+                    {% endif %}
+                    <button type="button" class="btn" id="generate-summary-btn" 
+                            style="background: #9ED17B; color: white; border: none;"
+                            onclick="generateSummary({{ post_to_edit.id }})">
+                        <span id="summary-btn-text">生成AI摘要</span>
+                        <span id="summary-loading" style="display: none;">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            生成中...
+                        </span>
+                    </button>
+                </div>
+            </div>
+            
+            {{form.submit(class="btn ALL-green-btn-dark mb-2")}}
+
+        </form>
+        {{ ckeditor.load(pkg_type="full") }}
+        {{ ckeditor.config(name='body') }}
+    </div>
+</section>
+
+<script>
+function generateSummary(postId) {
+    const btn = document.getElementById('generate-summary-btn');
+    const btnText = document.getElementById('summary-btn-text');
+    const loading = document.getElementById('summary-loading');
+    
+    // 禁用按钮并显示加载状态
+    btn.disabled = true;
+    btnText.style.display = 'none';
+    loading.style.display = 'inline';
+    
+    fetch(`/dashboard/generate_summary/${postId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 显示成功消息并刷新页面
+            alert('摘要生成成功！');
+            location.reload();
+        } else {
+            alert('生成摘要失败：' + (data.error || '未知错误'));
+            // 恢复按钮状态
+            btn.disabled = false;
+            btnText.style.display = 'inline';
+            loading.style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('生成摘要时出错，请重试');
+        // 恢复按钮状态
+        btn.disabled = false;
+        btnText.style.display = 'inline';
+        loading.style.display = 'none';
+    });
+}
+</script>
+
+</div>
+</section>
+
+{% endblock %}

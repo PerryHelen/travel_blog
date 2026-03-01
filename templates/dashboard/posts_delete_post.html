@@ -1,0 +1,46 @@
+{% extends "account/dashboard_admin.html" %}
+{% block page %}
+
+<h1 class="mb-3 text-center">删除帖子</h1>
+<section class="mb-3 container-fluid">
+    <div class="justify-content-center">
+        <p class="text-justify text-center">您即将删除的帖子的管理员批准状态为 {{post_to_delete.admin_approved}}<br>
+            此帖子有 {{ post_likes|length }} 个点赞和 {{ comments|length }} 条评论
+    </div>
+</section>
+
+<section class="container-fluid mt-4 mb-3">
+    <div class="row justify-content-center">
+        <div class="row no-gutters ALL-box-preview-shadow" style="width: 57rem;">
+            <div class="col-md-6 card-img ALL-picture ">
+                <img {% if post_to_delete.picture_h %}
+                    src="{{ url_for('static', filename='Pictures_Posts/'+post_to_delete.picture_h) }}" {% else %}
+                    src="{{ url_for('static', filename='Pictures_Posts/Picture_not_available.png') }}" {% endif %}
+                    class="card-img" alt="博客帖子图片">
+            </div>
+            <div class="col-md-6">
+                <div class="card-body">
+                    <h5 class="card-title">{{post_to_delete.title}}</h5>
+                    <p class="card-text text-justify">{{post_to_delete.intro}}</p>
+                    <a role="button" href="{{url_for('dashboard.preview_post', id=post_to_delete.id)}}"
+                        class="btn ALL-green-btn mb-2">预览</a>
+                    <p class="card-text"><small class="text-muted"> 作者：{{ post_to_delete.author.name }} - {{
+                            post_to_delete.date_to_post.strftime('%Y-%m-%d') }}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mb-3 container-fluid">
+    <div class="row justify-content-center">
+        <form class="col-lg-2 col-md-12" action="/dashboard/manage_posts/delete_post/{{post_to_delete.id}}"
+            method="POST">
+            <button type="submit" name="submit_delete_post" class="btn btn-danger mb-2"
+                style="width:120px">删除帖子</button>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

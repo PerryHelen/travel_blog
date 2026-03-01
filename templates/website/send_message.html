@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<meta name="description" content="Travel blog - Send Message">
+{% endblock %}
+{% block title %}发送私信{% endblock %}
+
+{% block content %}
+
+<h1 class="ALL-special-font ALL-h1 text-center">发送私信</h1>
+
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">发送给: 
+                        <img src="{{ url_for('static', filename='Pictures_Users/'+receiver.picture) }}" 
+                             class="rounded-circle mr-2" height="40" alt="User">
+                        {{ receiver.name }}
+                    </h5>
+                    <form method="POST" action="{{ url_for('website.send_message', user_id=receiver.id) }}">
+                        <div class="form-group">
+                            <label for="content">私信内容</label>
+                            <textarea class="form-control" id="content" name="content" rows="6" 
+                                      placeholder="请输入私信内容..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn" 
+                                    style="background: #C1DAE7; color: #333; border: none; padding: 8px 20px; border-radius: 6px;">
+                                发送
+                            </button>
+                            <a href="{{ url_for('website.my_messages') }}" class="btn btn-secondary">取消</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

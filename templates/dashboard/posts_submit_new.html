@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-3 text-center">提交新帖子</h1>
+
+<section class="mb-3 container-fluid">
+    <div class="justify-content-center">
+        <form action="" method="POST" enctype="multipart/form-data">
+            {{form.hidden_tag()}}
+            
+            <!-- 第一行：主题、日期、标题、简介 -->
+            <div class="form-row mb-3">
+                <div class="col-md-3">
+                    {{form.theme.label (class="form-label")}}
+                    {{form.theme (class="form-control")}}
+                </div>
+                <div class="col-md-3">
+                    {{form.date.label (class="form-label")}}
+                    {{form.date (class="form-control", type="date")}}
+                </div>
+                <div class="col-md-3">
+                    {{form.title.label (class="form-label")}}
+                    {{form.title (class="form-control")}}
+                </div>
+                <div class="col-md-3">
+                    {{form.intro.label (class="form-label")}}
+                    {{form.intro (class="form-control")}}
+                </div>
+            </div>
+
+            {% if current_user.type == "super_admin" %}
+            <div class="form-row mb-3">
+                <div class="col-md-12">
+                    {{form.author.label (class="form-label")}}
+                    {{form.author (class="form-control")}}
+                </div>
+            </div>
+            {% endif %}
+            {{form.body.label (class="form-label")}}
+            {{form.body (class="form-control", rows="10")}}
+
+            <br>
+            {{form.picture_v.label (class="form-label")}}
+            {{form.picture_v (class="form-control", oninput="checkFileSizeBlogPic(this, 'picture_v_size')")}}
+            {{form.picture_v_size (class="form-control", id="picture_v_size", type="hidden")}}
+            <br>
+            {{form.picture_h.label (class="form-label")}}
+            {{form.picture_h (class="form-control", oninput="checkFileSizeBlogPic(this, 'picture_h_size')")}}
+            {{form.picture_h_size (class="form-control", id="picture_h_size", type="hidden")}}
+            <br>
+            {{form.picture_s.label (class="form-label")}}
+            {{form.picture_s (class="form-control", oninput="checkFileSizeBlogPic(this, 'picture_s_size')")}}
+            {{form.picture_s_size (class="form-control", id="picture_s_size", type="hidden")}}
+            <br>
+            {{form.picture_alt.label (class="form-label")}}
+            {{form.picture_alt (class="form-control")}}
+            <br>
+            {{form.meta_tag.label (class="form-label")}}
+            {{form.meta_tag (class="form-control")}}
+            <br>
+            {{form.title_tag.label (class="form-label")}}
+            {{form.title_tag (class="form-control")}}
+            <br>
+            {{form.submit(class="btn ALL-green-btn-dark mb-2")}}
+
+        </form>
+        <script src="https://cdn.ckeditor.com/4.25.1/full/ckeditor.js"></script>
+        <script>
+            CKEDITOR.replace('body', {
+                on: {
+                    instanceReady: function (ev) {
+                        ev.editor.on('notificationShow', function (ev) {
+                            if (ev.data.message.includes('not secure')) {
+                                ev.cancel();
+                            }
+                        });
+                    }
+                }
+            });
+        </script>
+
+    </div>
+
+</section>
+
+{% endblock %}

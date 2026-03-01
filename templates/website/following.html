@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<meta name="description" content="我关注的人">
+{% endblock %}
+
+{% block title %}Travel blog - 我关注的人{% endblock %}
+
+{% block content %}
+
+<!-- Content -->
+<h2 class="mt-4 ALL-special-font ALL-h2 text-center">我关注的人</h2>
+
+<!-- Cards -->
+{% if following_users %}
+{% for user in following_users: %}
+<section class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="row no-gutters" style="width: 57rem;">
+            <div class="col-md-6 card-img ALL-picture ">
+                <img src="{{ url_for('static', filename='Pictures_Users/'+user.picture) }}" class="card-img "
+                    alt="user">
+            </div>
+            <div class="col-md-6">
+                <div class="card-body">
+                    <h5 class="card-title">{{ user.name }}</h5>
+                    <p class="card-text text-justify">{{ user.about if user.about else '暂无简介' }}</p>
+                    <a href="{{ url_for('website.about') }}" class="btn btn-primary btn-sm">查看详情</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
+{% else %}
+<div class="text-center mt-5">
+    <p class="text-muted">--您还没有关注任何人--</p>
+    <a href="{{ url_for('website.about') }}" class="btn btn-primary">去关注博主</a>
+</div>
+{% endif %}
+
+{% endblock %}

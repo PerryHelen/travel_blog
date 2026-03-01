@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Content -->
+
+<h1 class="mb-3 text-center">Account deletion</h1>
+<section class="mb-3 container-fluid">
+    <div class="justify-content-center">
+        <p class="text-justify text-center">该操作不可逆，您是否确定删除账户？</p>
+    </div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="row justify-content-center">
+        <p class="text-justify">{{ message }}</p>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</section>
+<section class="mb-3 container-fluid">
+    <div class="row justify-content-center">
+        <form class="" action="/dashboard/manage_account/delete/{{current_user.id}}" method="POST">
+            <button type="submit" name="submit_delete" class="btn btn-danger mb-2">删除</button>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

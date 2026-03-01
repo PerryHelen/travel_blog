@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<meta name="description" content="About the Travel Blog">
+{% endblock %}
+
+{% block title %}Travel blog - About{% endblock %}
+
+{% block content %}
+
+    <!-- Content -->
+    <h1 class="ALL-special-font ALL-h1 text-center">About the Authors</h1>
+
+    <!-- Cards: Culture (missing piece)-->
+    {% for author_info in authors_with_stats: %}
+    {% set author = author_info.author %}
+    <section class="container-fluid mt-4">
+        <div class="row justify-content-center">
+            <div class="row no-gutters" style="width: 57rem;">
+                <div class="col-md-6 card-img ALL-picture ">
+                    <img src="{{ url_for('static', filename='Pictures_Users/'+author.picture) }}" class="card-img "
+                        alt="author">
+                </div>
+                <div class="col-md-6">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ author.name }}</h5>
+                        <p class="card-text text-justify">{{ author.about }}</p>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                粉丝: <span id="followers-count-{{ author.id }}">{{ author_info.followers_count }}</span> | 
+                                关注: <span id="following-count-{{ author.id }}">{{ author_info.following_count }}</span>
+                            </small>
+                        </div>
+                        {% if logged_in and current_user.id != author.id %}
+                        <div class="mt-2">
+                            <button class="btn btn-primary btn-sm follow-btn" 
+                                    data-user-id="{{ author.id }}" 
+                                    id="follow-btn-{{ author.id }}">
+                                {% if author_info.is_following %}
+                                    已关注
+                                {% else %}
+                                    关注
+                                {% endif %}
+                            </button>
+                            <a href="{{ url_for('website.send_message', user_id=author.id) }}" 
+                               class="btn btn-sm" 
+                               style="background: #C1DAE7; color: #333; border: none; margin-left: 5px;">
+                                💬 私信
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endfor %}
+
+    <script>
+    // 关注功能
+    document.querySelectorAll('.follow-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const userId = this.getAttribute('data-user-id');
+            const btnId = `follow-btn-${userId}`;
+            const followersCountId = `followers-count-${userId}`;
+            
+            fetch(`/follow_user/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const btn = document.getElementById(btnId);
+                const followersCount = document.getElementById(followersCountId);
+                
+                if (data.is_following) {
+                    btn.textContent = '已关注';
+                    btn.classList.add('btn-secondary');
+                    btn.classList.remove('btn-primary');
+                } else {
+                    btn.textContent = '关注';
+                    btn.classList.add('btn-primary');
+                    btn.classList.remove('btn-secondary');
+                }
+                
+                if (followersCount) {
+                    followersCount.textContent = data.followers_count;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('操作失败，请重试');
+            });
+        });
+    });
+    </script>
+{% endblock %}

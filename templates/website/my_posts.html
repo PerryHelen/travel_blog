@@ -1,0 +1,835 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<meta name="description" content="Travel blog - My Posts">
+{% endblock %}
+{% block title %}我的主页{% endblock %}
+
+{% block content %}
+
+<style>
+    .section-divider {
+        margin: 60px 0;
+        border: none;
+        height: 2px;
+        background: linear-gradient(to right, transparent, #b3d7ae, transparent);
+    }
+    
+    .section-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #b3d7ae;
+        display: inline-block;
+    }
+    
+    .sidebar-nav {
+        position: fixed;
+        top: 120px;
+        left: 20px;
+        width: 180px;
+        padding: 20px 10px 20px 0;
+        z-index: 100;
+        max-height: calc(100vh - 140px);
+        overflow-y: auto;
+    }
+    
+    .nav-btn {
+        display: block;
+        width: 100%;
+        padding: 10px 15px;
+        margin-bottom: 8px;
+        background-color: #b3d7ae;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        text-align: left;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+    
+    .nav-btn:hover {
+        background-color: #9bc495;
+        color: white;
+        text-decoration: none;
+        transform: translateX(5px);
+    }
+    
+    .nav-btn.active {
+        background-color: #8ab883;
+        font-weight: bold;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding-left: 220px;
+    }
+    
+    @media (max-width: 992px) {
+        .sidebar-nav {
+            position: relative;
+            top: 0;
+            left: 0;
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 0;
+        }
+        
+        .main-content {
+            margin-left: 0;
+            padding-left: 0;
+        }
+        
+        .nav-btn {
+            display: inline-block;
+            width: auto;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+    }
+    
+    .quick-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+    }
+    
+    .quick-action-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .quick-action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .section-container {
+        padding: 40px 0;
+        scroll-margin-top: 80px;
+    }
+    
+    .message-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .message-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
+
+<!-- Content -->
+<div class="container-fluid" style="max-width: 1400px; margin: 0 auto; padding: 20px;">
+    
+    <!-- 页面标题 -->
+    <div class="text-center mb-5">
+        <h1 class="ALL-special-font ALL-h1" style="font-size: 3rem; margin-bottom: 20px;">我的主页</h1>
+    </div>
+    
+    <!-- 左侧导航栏和内容区域 -->
+    <div class="row">
+        <div class="col-md-2">
+            <div class="sidebar-nav">
+                <a href="#my-posts" class="nav-btn">📝 我的博客</a>
+                <a href="#bookmarks" class="nav-btn">⭐ 收藏</a>
+                <a href="#recommendations" class="nav-btn">🌟 推荐</a>
+                <a href="#comments" class="nav-btn">💬 评论</a>
+                <a href="#messages" class="nav-btn">✉️ 私信</a>
+                <a href="#following" class="nav-btn">👥 关注</a>
+                <a href="#followers" class="nav-btn">👤 粉丝</a>
+            </div>
+        </div>
+        
+        <div class="col-md-10 main-content">
+
+    <!-- 我的博客部分 -->
+    <div class="section-container" id="my-posts">
+        <h2 class="section-title">📝 我的博客</h2>
+        
+        {% if my_blog_posts|length == 0 %}
+        <div class="text-center py-5">
+            <p class="lead">您还没有发布任何博客文章。</p>
+            <a href="{{ url_for('dashboard.submit_post') }}" class="btn ALL-green-btn btn-lg">发布博客</a>
+        </div>
+        {% else %}
+        {% set i = 0 %}
+        {% for post in my_blog_posts: %}
+        <section class="mb-4">
+            <div class="row justify-content-center">
+                <div class="row no-gutters" style="width: 57rem;">
+                    <div class="col-md-6 card-img ALL-picture">
+                        {% if post.picture_h %}
+                        <img src="{{ url_for('static', filename='Pictures_Posts/'+post.picture_h) }}" class="card-img"
+                            alt="{{ post.picture_alt }}">
+                        {% elif post.picture_v %}
+                        <img src="{{ url_for('static', filename='Pictures_Posts/'+post.picture_v) }}" class="card-img"
+                            alt="{{ post.picture_alt }}">
+                        {% elif post.picture_s %}
+                        <img src="{{ url_for('static', filename='Pictures_Posts/'+post.picture_s) }}" class="card-img"
+                            alt="{{ post.picture_alt }}">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='Pictures_Posts/Picture_not_available.png') }}" class="card-img"
+                            alt="No image">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <div class="mb-2">
+                                {% if post.admin_approved == "FALSE" %}
+                                <span class="badge badge-warning">待审核</span>
+                                {% else %}
+                                <span class="badge badge-success">已发布</span>
+                                {% endif %}
+                            </div>
+                            <p class="card-text text-justify">{{ intros[i] }}</p>
+                            <div class="mb-2" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                {% if post.admin_approved == "TRUE" %}
+                                <a role="button" href="{{ url_for('website.blog_post', index=post.id) }}"
+                                class="btn ALL-green-btn mb-2">查看</a>
+                                {% else %}
+                                <span class="btn" style="min-width: 100px; background: #DCE8E5; color: #333; border: none; padding: 8px 16px; border-radius: 6px;">待审核</span>
+                                {% endif %}
+                                {% if current_user.type == "admin" or current_user.type == "super_admin" %}
+                                <a role="button" href="{{ url_for('dashboard.edit_post', id=post.id) }}"
+                                    class="btn ALL-green-btn mb-2" >编辑</a>
+                                {% elif current_user.type == "author" and post.author_id == current_user.id %}
+                                <a role="button" href="{{ url_for('dashboard.edit_post_author', id=post.id) }}"
+                                    class="btn ALL-green-btn mb-2">编辑</a>
+                                {% endif %}
+                                 <button type="button" class="btn ALL-green-btn mb-2" 
+                                     data-toggle="modal" data-target="#deleteModal{{ post.id }}">删除</button>
+                            </div>
+                            <p class="card-text"><small class="text-muted">发布时间: {{ post.date_to_post.strftime('%Y-%m-%d %H:%M') if post.date_to_post else '未设置' }}</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 删除确认模态框 -->
+        <div class="modal fade" id="deleteModal{{ post.id }}" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">确认删除</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>您确定要删除博客《{{ post.title }}》吗？此操作不可恢复！</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <form method="POST" action="{{ url_for('website.delete_my_post', post_id=post.id) }}" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">确认删除</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% set i = i + 1 %}
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- 面板部分 -->
+    <div class="section-container" id="bookmarks">
+        <h2 class="section-title">⭐ 我的收藏</h2>
+        
+        {% if latest_bookmarks != None %}
+        {% for bookmark in latest_bookmarks%}
+        <div class="row justify-content-center mb-4">
+            <div class="row no-gutters" style="width: 57rem;">
+                <div class="col-md-3 card-img ALL-picture">
+                    {% if bookmark.post.picture_h %}
+                    <img src="{{ url_for('static', filename='Pictures_Posts/'+bookmark.post.picture_h) }}" class="card-img"
+                        alt="{{ bookmark.post.picture_alt }}">
+                    {% elif bookmark.post.picture_v %}
+                    <img src="{{ url_for('static', filename='Pictures_Posts/'+bookmark.post.picture_v) }}" class="card-img"
+                        alt="{{ bookmark.post.picture_alt }}">
+                    {% elif bookmark.post.picture_s %}
+                    <img src="{{ url_for('static', filename='Pictures_Posts/'+bookmark.post.picture_s) }}" class="card-img"
+                        alt="{{ bookmark.post.picture_alt }}">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='Pictures_Posts/Picture_not_available.png') }}" class="card-img"
+                        alt="No image">
+                    {% endif %}
+                </div>
+                <div class="col-md-9">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ bookmark.post.title }}</h4>
+                        <p class="card-text"><small class="text-muted">by {{ bookmark.post.author.name }} - {{ bookmark.post.date_to_post}}</small></p>
+                        <a role="button" href="{{ url_for('website.blog_post', index=bookmark.post.id) }}"
+                            class="btn ALL-green-btn mb-2" style="width: 150px;">阅读</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="text-center text-muted py-4">--你还没有收藏任何帖子--</p>
+        {% endif %}
+
+        <h2 class="section-title mt-5" id="recommendations">🌟 为您推荐</h2>
+        <div class="row justify-content-center mt-4">
+            {% for post in latest_posts: %}
+            <a class="ALL-no-hover" href="{{ url_for('website.blog_post', index=post.id) }}">
+                <div class="col col-auto mb-3">
+                    <div class="card h-100 HOME-card ALL-post-hover" style="width: 18rem; height: 380px !important;">
+                        {% if post.picture_h %}
+                        <img src="{{ url_for('static', filename='Pictures_Posts/'+post.picture_h) }}" class="card-img-top"
+                            alt="{{ post.picture_alt }}" />
+                        {% elif post.picture_v %}
+                        <img src="{{ url_for('static', filename='Pictures_Posts/'+post.picture_v) }}" class="card-img-top"
+                            alt="{{ post.picture_alt }}" />
+                        {% elif post.picture_s %}
+                        <img src="{{ url_for('static', filename='Pictures_Posts/'+post.picture_s) }}" class="card-img-top"
+                            alt="{{ post.picture_alt }}" />
+                        {% else %}
+                        <img src="{{ url_for('static', filename='Pictures_Posts/Picture_not_available.png') }}"
+                            class="card-img-top" alt="No image" />
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title ALL-no-hover">{{ post.title }}</h5>
+                        </div>
+                        <div class="card-footer HOME-card-footer">
+                            <small class="text-muted ALL-no-hover">by {{ post.author.name }} - {{ post.date_to_post.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- 评论部分 -->
+    <div class="section-container" id="comments">
+        <h2 class="section-title">💬 我的评论</h2>
+        
+        {% if users_comments == None %}
+        <p class="text-center text-muted py-4">--您无回复消息，您尚未对任何文章发表评论--</p>
+        {% else %}
+        {% for comment in users_comments %}
+        <div class="mb-4">
+            <p class="text-center"><b>您的评论位于：{{ comment.target_post.title }}</b></p>
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="row no-gutters" style="max-width: 57rem;">
+                        <div class="col-1">
+                            <div class="card-body">
+                                <img {% if comment.blocked=="FALSE" %}
+                                    src="{{ url_for('static', filename='Pictures_Users/'+comment.user.picture) }}"
+                                    alt="{{ comment.user.name }}" {% else %}
+                                    src="{{ url_for('static', filename='Pictures_Users/Picture_default.jpg') }}" alt="被屏蔽用户" {%
+                                    endif %} class="card-img" style="border-radius: 10% !important;">
+                            </div>
+                        </div>
+                        <div class="col-11">
+                            <div class="card-body">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <p class="card-text"><b class="text-muted">
+                                            {% if comment.blocked == "FALSE" %}
+                                            {{ comment.user.name }}
+                                            {% else %}
+                                            {{comment.if_blocked}}
+                                            {% endif %}
+                                        </b></p>
+                                    <div>
+                                        <p class="card-text"><small class="text-muted">{{
+                                                comment.date_submitted.strftime('%Y-%m-%d') }}</small></p>
+                                        {% if comment.blocked == "FALSE" and current_user.id == comment.user.id %}
+                                        <p class="card-text ALL-svg-parent" id="p-parent-of-{{comment.id}}-comment">
+                                            <small class="text-muted">删除评论：</small>
+                                            <svg id="comment-id-{{comment.id}}"
+                                                onclick="deleteCommentOrReply(event, '{{comment.target_post.id}}', 'true', '{{comment.id}}')"
+                                                class="ALL-svg-delete ALL-grey" xmlns="http://www.w3.org/2000/svg"
+                                                height="427pt" viewBox="-40 0 427 427.00131" width="427pt">
+                                                <path d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                <path d="m114.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                <path d="m28.398438 127.121094v246.378906c0 14.5625 5.339843 28.238281 14.667968 38.050781 9.285156 9.839844 22.207032 15.425781 35.730469 15.449219h189.203125c13.527344-.023438 26.449219-5.609375 35.730469-15.449219 9.328125-9.8125 14.667969-23.488281 14.667969-38.050781v-246.378906c18.542968-4.921875 30.558593-22.835938 28.078124-41.863282-2.484374-19.023437-18.691406-33.253906-37.878906-33.257812h-51.199218v-12.5c.058593-10.511719-4.097657-20.605469-11.539063-28.03125-7.441406-7.421875-17.550781-11.5546875-28.0625-11.46875h-88.796875c-10.511719-.0859375-20.621094 4.046875-28.0625 11.46875-7.441406 7.425781-11.597656 17.519531-11.539062 28.03125v12.5h-51.199219c-19.1875.003906-35.394531 14.234375-37.878907 33.257812-2.480468 19.027344 9.535157 36.941407 28.078126 41.863282zm239.601562 279.878906h-189.203125c-17.097656 0-30.398437-14.6875-30.398437-33.5v-245.5h250v245.5c0 18.8125-13.300782 33.5-30.398438 33.5zm-158.601562-367.5c-.066407-5.207031 1.980468-10.21875 5.675781-13.894531 3.691406-3.675781 8.714843-5.695313 13.925781-5.605469h88.796875c5.210937-.089844 10.234375 1.929688 13.925781 5.605469 3.695313 3.671875 5.742188 8.6875 5.675782 13.894531v12.5h-128zm-71.199219 32.5h270.398437c9.941406 0 18 8.058594 18 18s-8.058594 18-18 18h-270.398437c-9.941407 0-18-8.058594-18-18s8.058593-18 18-18zm0 0" />
+                                                <path d="m173.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                            </svg>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <p class="card-text">
+                                    {% if comment.blocked == "FALSE" %}
+                                    {{ comment.text }}
+                                    {% else %}
+                                    {{ comment.if_blocked }}
+                                    {% endif %}
+                                </p>
+                                <p class="card-text"><small class="text-muted">回复</small></p>
+                                <!-- replies here -->
+                                {% for reply in replies %}
+                                {% if reply.comment_id == comment.id %}
+                                <div class="ml-4 mt-2">
+                                    <div class="row no-gutters">
+                                        <div class="col-1">
+                                            <div class="card-body">
+                                                {% if reply.blocked == "FALSE" %}
+                                                <img src="{{ url_for('static', filename='Pictures_Users/'+reply.user.picture) }}"
+                                                    alt="{{ reply.user.name }}" class="card-img"
+                                                    style="border-radius: 10% !important;">
+                                                {% else %}
+                                                <img src="{{ url_for('static', filename='Pictures_Users/Picture_default.jpg') }}"
+                                                    alt="被屏蔽用户" class="card-img" style="border-radius: 10% !important;">
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-11">
+                                            <div class="card-body">
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <p class="card-text"><b class="text-muted">
+                                                            {% if reply.blocked == "FALSE" %}
+                                                            {{ reply.user.name }}
+                                                            {% else %}
+                                                            [已移除]
+                                                            {% endif %}
+                                                        </b></p>
+                                                </div>
+                                                <p class="card-text">
+                                                    {% if reply.blocked == "FALSE" %}
+                                                    {{ reply.text }}
+                                                    {% else %}
+                                                    {{ reply.if_blocked }}
+                                                    {% endif %}
+                                                </p>
+                                                <div>
+                                                    <p class="card-text"><small class="text-muted">{{
+                                                            reply.date_submitted.strftime('%Y-%m-%d')}}</small></p>
+                                                    {% if reply.blocked == "FALSE" and current_user.id == comment.user.id %}
+                                                    <p class="card-text ALL-svg-parent" id="p-parent-of-{{reply.id}}-reply"
+                                                        style="justify-content: left; margin-top:-10px;">
+                                                        <small class="text-muted">删除评论：</small>
+                                                        <svg id="reply-id-{{reply.id}}"
+                                                            onclick="deleteCommentOrReply(event, '{{reply.target_post.id}}', 'false', '{{reply.id}}')"
+                                                            class="ALL-svg-delete ALL-grey" xmlns="http://www.w3.org/2000/svg"
+                                                            height="427pt" viewBox="-40 0 427 427.00131" width="427pt">
+                                                            <path d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                            <path d="m114.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                            <path d="m28.398438 127.121094v246.378906c0 14.5625 5.339843 28.238281 14.667968 38.050781 9.285156 9.839844 22.207032 15.425781 35.730469 15.449219h189.203125c13.527344-.023438 26.449219-5.609375 35.730469-15.449219 9.328125-9.8125 14.667969-23.488281 14.667969-38.050781v-246.378906c18.542968-4.921875 30.558593-22.835938 28.078124-41.863282-2.484374-19.023437-18.691406-33.253906-37.878906-33.257812h-51.199218v-12.5c.058593-10.511719-4.097657-20.605469-11.539063-28.03125-7.441406-7.421875-17.550781-11.5546875-28.0625-11.46875h-88.796875c-10.511719-.0859375-20.621094 4.046875-28.0625 11.46875-7.441406 7.425781-11.597656 17.519531-11.539062 28.03125v12.5h-51.199219c-19.1875.003906-35.394531 14.234375-37.878907 33.257812-2.480468 19.027344 9.535157 36.941407 28.078126 41.863282zm239.601562 279.878906h-189.203125c-17.097656 0-30.398437-14.6875-30.398437-33.5v-245.5h250v245.5c0 18.8125-13.300782 33.5-30.398438 33.5zm-158.601562-367.5c-.066407-5.207031 1.980468-10.21875 5.675781-13.894531 3.691406-3.675781 8.714843-5.695313 13.925781-5.605469h88.796875c5.210937-.089844 10.234375 1.929688 13.925781 5.605469 3.695313 3.671875 5.742188 8.6875 5.675782 13.894531v12.5h-128zm-71.199219 32.5h270.398437c9.941406 0 18 8.058594 18 18s-8.058594 18-18 18h-270.398437c-9.941407 0-18-8.058594-18-18s8.058593-18 18-18zm0 0" />
+                                                            <path d="m173.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                        </svg>
+                                                    </p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 text-center">
+                <a role="button" href="{{ url_for('website.blog_post', index=comment.target_post.id) }}"
+                    class="btn ALL-green-btn" style="width: 150px;">前往博客文章</a>
+            </div>
+            {% if not loop.last %}
+            <hr style="margin: 30px 0;">
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- 私信部分 -->
+    <div class="section-container" id="messages">
+        <h2 class="section-title">
+            ✉️ 我的私信
+            {% if unread_count and unread_count > 0 %}
+            <span class="badge badge-danger">{{ unread_count }}</span>
+            {% endif %}
+        </h2>
+        
+        <div class="row mt-4">
+            <!-- 收到的私信 -->
+            <div class="col-md-6">
+                <h4 class="mb-3">📥 收到的私信 ({{ received_messages|length }})</h4>
+                {% if received_messages|length == 0 %}
+                <p class="text-muted text-center py-4">暂无收到的私信</p>
+                {% else %}
+                {% for message in received_messages %}
+                <div class="card mb-3 message-card {% if message.read == 'FALSE' %}border-primary{% endif %}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-title">
+                                    <img src="{{ url_for('static', filename='Pictures_Users/'+message.sender.picture) }}" 
+                                         class="rounded-circle mr-2" height="30" alt="User">
+                                    {{ message.sender.name }}
+                                    {% if message.read == 'FALSE' %}
+                                    <span class="badge badge-primary">未读</span>
+                                    {% endif %}
+                                </h6>
+                                <p class="card-text" style="white-space: pre-wrap;">{{ message.content }}</p>
+                                {% if '查看文章：' in message.content %}
+                                {% set lines = message.content.split('\n') %}
+                                {% for line in lines %}
+                                {% if '查看文章：' in line %}
+                                <a href="{{ line.split('查看文章：')[1].strip() }}" class="btn btn-sm mt-2" 
+                                   style="background: #b3d7ae; color: white; border: none;">
+                                    查看转发的文章
+                                </a>
+                                {% endif %}
+                                {% endfor %}
+                                {% endif %}
+                                <small class="text-muted d-block mt-2">{{ message.date_submitted.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                            <div>
+                                {% if message.read == 'FALSE' %}
+                                <button class="btn btn-sm btn-outline-primary" 
+                                        onclick="markAsRead({{ message.id }})">标记已读</button>
+                                {% endif %}
+                                <a href="{{ url_for('website.send_message', user_id=message.sender_id) }}" 
+                                   class="btn btn-sm mt-1" 
+                                   style="background: #C1DAE7; color: #333; border: none; display: block;">回复</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+            
+            <!-- 发送的私信 -->
+            <div class="col-md-6">
+                <h4 class="mb-3">📤 发送的私信 ({{ sent_messages|length }})</h4>
+                {% if sent_messages|length == 0 %}
+                <p class="text-muted text-center py-4">暂无发送的私信</p>
+                {% else %}
+                {% for message in sent_messages %}
+                <div class="card mb-3 message-card">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <img src="{{ url_for('static', filename='Pictures_Users/'+message.receiver.picture) }}" 
+                                 class="rounded-circle mr-2" height="30" alt="User">
+                            发送给: {{ message.receiver.name }}
+                        </h6>
+                        <p class="card-text" style="white-space: pre-wrap;">{{ message.content }}</p>
+                        {% if '查看文章：' in message.content %}
+                        {% set lines = message.content.split('\n') %}
+                        {% for line in lines %}
+                        {% if '查看文章：' in line %}
+                        <a href="{{ line.split('查看文章：')[1].strip() }}" class="btn btn-sm mt-2" 
+                           style="background: #b3d7ae; color: white; border: none;">
+                            查看转发的文章
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                        <small class="text-muted d-block mt-2">{{ message.date_submitted.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- 关注部分 -->
+    <div class="section-container" id="following">
+        <h2 class="section-title">👥 我的关注</h2>
+        
+        {% if following_users|length == 0 %}
+        <p class="text-center text-muted py-4">--您还没有关注任何人--</p>
+        {% else %}
+        <div class="row justify-content-center mt-4">
+            {% for user in following_users %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-4">
+                                <img src="{{ url_for('static', filename='Pictures_Users/'+user.picture) }}" 
+                                     class="card-img rounded-circle" alt="{{ user.name }}" style="width: 80px; height: 80px; object-fit: cover;">
+                            </div>
+                            <div class="col-8">
+                                <h5 class="card-title">{{ user.name }}</h5>
+                                <p class="card-text text-muted">{{ user.about if user.about else '暂无简介' }}</p>
+                                <a href="{{ url_for('website.about') }}" class="btn btn-sm" 
+                                   style="background: #b3d7ae; color: white; border: none;">查看详情</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- 粉丝部分 -->
+    <div class="section-container" id="followers">
+        <h2 class="section-title">👤 我的粉丝</h2>
+        
+        {% if followers|length == 0 %}
+        <p class="text-center text-muted py-4">--您还没有粉丝--</p>
+        {% else %}
+        <div class="row justify-content-center mt-4">
+            {% for user in followers %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-4">
+                                <img src="{{ url_for('static', filename='Pictures_Users/'+user.picture) }}" 
+                                     class="card-img rounded-circle" alt="{{ user.name }}" style="width: 80px; height: 80px; object-fit: cover;">
+                            </div>
+                            <div class="col-8">
+                                <h5 class="card-title">{{ user.name }}</h5>
+                                <p class="card-text text-muted">{{ user.about if user.about else '暂无简介' }}</p>
+                                <a href="{{ url_for('website.about') }}" class="btn btn-sm" 
+                                   style="background: #b3d7ae; color: white; border: none;">查看详情</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+function markAsRead(messageId) {
+    fetch(`/my_posts/mark_message_read/${messageId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('操作失败：' + (data.error || '未知错误'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('操作失败，请重试');
+    });
+}
+
+// 导航按钮点击高亮
+document.addEventListener('DOMContentLoaded', function() {
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.section-container');
+    
+    // 平滑滚动
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+    
+    // 滚动时高亮当前区域
+    function highlightNav() {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (window.pageYOffset >= sectionTop - 150) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        navButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('href') === '#' + current) {
+                btn.classList.add('active');
+            }
+        });
+    }
+    
+    window.addEventListener('scroll', highlightNav);
+    highlightNav(); // 初始高亮
+    
+    // 获取静态文件路径和 about 页面 URL
+    const staticUsersPath = "{{ url_for('static', filename='Pictures_Users/') }}";
+    const aboutUrl = "{{ url_for('website.about') }}";
+    
+    // 更新关注和粉丝列表
+    updateFollowsLists(staticUsersPath, aboutUrl);
+    
+    // 当页面可见性变化时（用户从其他页面返回），刷新列表
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            updateFollowsLists(staticUsersPath, aboutUrl);
+        }
+    });
+    
+    // 定期刷新列表（每30秒）
+    setInterval(function() {
+        if (!document.hidden) {
+            updateFollowsLists(staticUsersPath, aboutUrl);
+        }
+    }, 30000);
+});
+
+// 更新关注和粉丝列表的函数
+function updateFollowsLists(staticUsersPath, aboutUrl) {
+    fetch('/api/my_follows')
+        .then(response => response.json())
+        .then(data => {
+            // 更新关注列表
+            updateFollowingList(data.following, staticUsersPath, aboutUrl);
+            // 更新粉丝列表
+            updateFollowersList(data.followers, staticUsersPath, aboutUrl);
+        })
+        .catch(error => {
+            console.error('Error updating follows lists:', error);
+        });
+}
+
+// 更新关注列表显示
+function updateFollowingList(followingList, staticUsersPath, aboutUrl) {
+    const followingSection = document.getElementById('following');
+    if (!followingSection) return;
+    
+    // 移除标题之外的所有内容
+    const title = followingSection.querySelector('.section-title');
+    followingSection.innerHTML = '';
+    if (title) {
+        followingSection.appendChild(title);
+    }
+    
+    if (followingList.length === 0) {
+        const emptyMsg = document.createElement('p');
+        emptyMsg.className = 'text-center text-muted py-4';
+        emptyMsg.textContent = '--您还没有关注任何人--';
+        followingSection.appendChild(emptyMsg);
+    } else {
+        const container = document.createElement('div');
+        container.className = 'row justify-content-center mt-4';
+        
+        followingList.forEach(user => {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-md-6 mb-4';
+            
+            colDiv.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-4">
+                                <img src="${staticUsersPath}${user.picture}" 
+                                     class="card-img rounded-circle" alt="${user.name}" style="width: 80px; height: 80px; object-fit: cover;">
+                            </div>
+                            <div class="col-8">
+                                <h5 class="card-title">${user.name}</h5>
+                                <p class="card-text text-muted">${user.about}</p>
+                                <a href="${aboutUrl}" class="btn btn-sm" 
+                                   style="background: #b3d7ae; color: white; border: none;">查看详情</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(colDiv);
+        });
+        
+        followingSection.appendChild(container);
+    }
+}
+
+// 更新粉丝列表显示
+function updateFollowersList(followersList, staticUsersPath, aboutUrl) {
+    const followersSection = document.getElementById('followers');
+    if (!followersSection) return;
+    
+    // 移除标题之外的所有内容
+    const title = followersSection.querySelector('.section-title');
+    followersSection.innerHTML = '';
+    if (title) {
+        followersSection.appendChild(title);
+    }
+    
+    if (followersList.length === 0) {
+        const emptyMsg = document.createElement('p');
+        emptyMsg.className = 'text-center text-muted py-4';
+        emptyMsg.textContent = '--您还没有粉丝--';
+        followersSection.appendChild(emptyMsg);
+    } else {
+        const container = document.createElement('div');
+        container.className = 'row justify-content-center mt-4';
+        
+        followersList.forEach(user => {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-md-6 mb-4';
+            
+            colDiv.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-4">
+                                <img src="${staticUsersPath}${user.picture}" 
+                                     class="card-img rounded-circle" alt="${user.name}" style="width: 80px; height: 80px; object-fit: cover;">
+                            </div>
+                            <div class="col-8">
+                                <h5 class="card-title">${user.name}</h5>
+                                <p class="card-text text-muted">${user.about}</p>
+                                <a href="${aboutUrl}" class="btn btn-sm" 
+                                   style="background: #b3d7ae; color: white; border: none;">查看详情</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(colDiv);
+        });
+        
+        followersSection.appendChild(container);
+    }
+}
+</script>
+
+{% endblock %}
